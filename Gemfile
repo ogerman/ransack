@@ -42,7 +42,9 @@ else
   end
 end
 
-gem 'mongoid', '~> 4.0.0'
+if ENV['DB'] =~ /mongodb/
+  gem 'mongoid', '~> 4.0.0'
+end
 
 # Removed from Ruby 2.2 but needed for testing Rails 3.x.
 group :test do

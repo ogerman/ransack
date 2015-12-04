@@ -1,4 +1,4 @@
-require 'mongoid'
+begin; require 'mongoid'; rescue LoadError; end
 require 'machinist/active_record'
 require 'sham'
 require 'faker'

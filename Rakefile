@@ -19,6 +19,7 @@ end
 task :default do
   if ENV['DB'] =~ /mongodb/
     Rake::Task["mongoid"].invoke
+    Rake::Task["spec"].invoke
   else
     Rake::Task["spec"].invoke
   end
