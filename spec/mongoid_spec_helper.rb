@@ -1,4 +1,5 @@
 require 'machinist/object'
+require 'active_record'
 require 'sham'
 require 'faker'
 require 'pry'
@@ -12,6 +13,7 @@ I18n.load_path += Dir[File.join(File.dirname(__FILE__), 'support', '*.yml')]
 Dir[File.expand_path('../{mongoid/helpers,mongoid/support,blueprints}/*.rb',
   __FILE__)]
 .each { |f| require f }
+
 
 Sham.define do
   name        { Faker::Name.name }

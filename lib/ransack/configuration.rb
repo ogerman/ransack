@@ -4,8 +4,10 @@ require 'ransack/predicate'
 module Ransack
   module Configuration
 
-    mattr_accessor :predicates, :options
+    mattr_accessor :predicates, :mongoid_predicates, :active_record_predicates, :options
     self.predicates = {}
+    self.mongoid_predicates = {}
+    self.active_record_predicates = {}
     self.options = {
       :search_key => :q,
       :ignore_unknown_conditions => true,
@@ -16,14 +18,21 @@ module Ransack
       yield self
     end
 
-    def add_predicate(name, opts = {})
+
+    def add_predicate(name, opts = {}, orm = nil)
+      # raise 'foo' if opts[:formatter].present?
       name = name.to_s
       opts[:name] = name
       compounds = opts.delete(:compounds)
       compounds = true if compounds.nil?
       compounds = false if opts[:wants_array]
-
-      self.predicates[name] = Predicate.new(opts)
+      if orm == :mongoid
+        self.mongoid_predicates[name] = Predicate.new(opts)
+      elsif orm == :active_record
+        self.active_record_predicates[name] = Predicate.new(opts)
+      else
+        self.predicates[name] = Predicate.new(opts)
+      end
 
       Constants::SUFFIXES.each do |suffix|
         compound_name = name + suffix

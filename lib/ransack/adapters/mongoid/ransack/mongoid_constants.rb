@@ -1,5 +1,6 @@
 module Ransack
-  module Constants
+  module MongoidConstants
+    include Ransack::Constants
     DERIVED_PREDICATES = [
       [CONT, {
         :arel_predicate => 'matches',

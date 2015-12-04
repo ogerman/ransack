@@ -21,8 +21,16 @@ Ransack.configure do |config|
   Ransack::Constants::AREL_PREDICATES.each do |name|
     config.add_predicate name, :arel_predicate => name
   end
-  Ransack::Constants::DERIVED_PREDICATES.each do |args|
-    config.add_predicate *args
+  if defined? Ransack::ActiveRecordConstants
+    Ransack::ActiveRecordConstants::DERIVED_PREDICATES.each do |args|
+      config.add_predicate *args, :active_record
+    end
+  end
+  
+  if defined? Ransack::MongoidConstants
+    Ransack::MongoidConstants::DERIVED_PREDICATES.each do |args|
+      config.add_predicate *args, :mongoid
+    end
   end
 end
 

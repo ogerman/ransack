@@ -53,12 +53,7 @@ module Ransack
         describe '#ransacker' do
           # For infix tests
           def self.sane_adapter?
-            case ::Mongoid::Document.connection.adapter_name
-            when "SQLite3", "PostgreSQL"
-              true
-            else
-              false
-            end
+            false
           end
           # # in schema.rb, class Person:
           # ransacker :reversed_name, formatter: proc { |v| v.reverse } do |parent|

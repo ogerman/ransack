@@ -4,12 +4,12 @@ module Ransack
     def self.current_adapters
       @current_adapters ||= {
         :active_record => defined?(::ActiveRecord::Base),
-        :mongoid => defined?(::Mongoid) && !defined?(::ActiveRecord::Base)
+        :mongoid => defined?(::Mongoid)
       }
     end
     def self.require_constants
-      require 'ransack/adapters/mongoid/ransack/constants' if current_adapters[:mongoid]
-      require 'ransack/adapters/active_record/ransack/constants' if current_adapters[:active_record]
+      require 'ransack/adapters/mongoid/ransack/mongoid_constants' if current_adapters[:mongoid]
+      require 'ransack/adapters/active_record/ransack/active_record_constants' if current_adapters[:active_record]
     end
 
     def self.require_adapter
@@ -30,13 +30,13 @@ module Ransack
     end
 
     def self.require_nodes
-      require 'ransack/adapters/active_record/ransack/nodes/condition' if current_adapters[:active_record]
-      require 'ransack/adapters/mongoid/ransack/nodes/condition' if current_adapters[:mongoid]
+      require 'ransack/adapters/active_record/ransack/nodes/active_record_condition' if current_adapters[:active_record]
+      require 'ransack/adapters/mongoid/ransack/nodes/mongoid_condition' if current_adapters[:mongoid]
     end
 
     def self.require_search
-      require 'ransack/adapters/active_record/ransack/context' if current_adapters[:active_record]
-      require 'ransack/adapters/mongoid/ransack/context' if current_adapters[:mongoid]
+      require 'ransack/adapters/active_record/ransack/active_record_context' if current_adapters[:active_record]
+      require 'ransack/adapters/mongoid/ransack/mongoid_context' if current_adapters[:mongoid]
     end
   end
 end

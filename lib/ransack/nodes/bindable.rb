@@ -27,6 +27,12 @@ module Ransack
 
       private
 
+      def is_ar_class?
+        @klass.ancestors.include?(ActiveRecord::Base)
+      rescue NameError
+        false
+      end
+
       def get_arel_attribute
         if ransacker
           ransacker.attr_from(self)
@@ -44,6 +50,7 @@ module Ransack
       end
 
       def is_alias_attribute?
+        is_ar_class? &&
         Ransack::SUPPORTS_ATTRIBUTE_ALIAS &&
         context.klass.attribute_aliases.key?(attr_name)
       end

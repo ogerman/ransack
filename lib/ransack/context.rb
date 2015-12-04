@@ -3,7 +3,7 @@ Ransack::Adapters.require_context
 
 module Ransack
   class Context
-    attr_reader :search, :object, :klass, :base, :engine, :arel_visitor
+    attr_reader :search, :object, :klass, :base, :engine, :arel_visitor, :orm
     attr_accessor :auth_object, :search_key
 
     class << self
@@ -16,12 +16,28 @@ module Ransack
         raise "not implemented"
       end
 
+      def object_orm_context(object)
+        class_orm_context(object.class)
+      end
+
+      def class_orm_context(object)
+        #we don't want NameError here, so lets check strings
+        ancestors = object.ancestors.map(&:to_s)
+        if ancestors.include?('ActiveRecord::Base')
+          ActiveRecordContext
+        elsif ancestors.include?('Mongoid::Document')
+          MongoidContext
+        else
+          raise "Unknown ORM for #{object}"
+        end
+      end
+
       def for(object, options = {})
         context =
           if Class === object
-            for_class(object, options)
+            class_orm_context(object).for_class(object, options)
           else
-            for_object(object, options)
+            object_orm_context(object).for_object(object, options)
           end
         context or raise ArgumentError,
           "Don't know what context to use for #{object}"

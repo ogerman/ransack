@@ -1,5 +1,6 @@
 module Ransack
-  module Constants
+  module ActiveRecordConstants
+    include Ransack::Constants
     DISTINCT = 'DISTINCT '.freeze
 
     DERIVED_PREDICATES = [

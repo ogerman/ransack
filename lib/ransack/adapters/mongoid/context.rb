@@ -4,7 +4,7 @@ require 'polyamorous'
 module Ransack
   module Adapters
     module Mongoid
-      class Context < ::Ransack::Context
+      class Context < ::Ransack::MongoidContext
 
         # Because the AR::Associations namespace is insane
         # JoinDependency = ::Mongoid::Associations::JoinDependency

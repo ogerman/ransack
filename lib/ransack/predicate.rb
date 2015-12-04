@@ -5,27 +5,37 @@ module Ransack
 
     class << self
 
-      def names
-        Ransack.predicates.keys
+      def predicates(orm)
+        if orm == :mongoid
+          Ransack.mongoid_predicates.merge Ransack.predicates
+        elsif orm == :active_record
+          Ransack.active_record_predicates.merge Ransack.predicates
+        else
+          Ransack.predicates
+        end
       end
 
-      def names_by_decreasing_length
-        names.sort { |a, b| b.length <=> a.length }
+      def names(orm = nil)
+        predicates(orm).keys
       end
 
-      def named(name)
-        Ransack.predicates[name.to_s]
+      def names_by_decreasing_length(orm = nil)
+        names(orm).sort { |a, b| b.length <=> a.length }
       end
 
-      def detect_and_strip_from_string!(str)
-        if p = detect_from_string(str)
+      def named(name, orm = nil)
+        predicates(orm)[name.to_s]
+      end
+
+      def detect_and_strip_from_string!(str, orm = nil)
+        if p = detect_from_string(str, orm)
           str.sub! /_#{p}$/, ''.freeze
           p
         end
       end
 
-      def detect_from_string(str)
-        names_by_decreasing_length.detect { |p| str.end_with?("_#{p}") }
+      def detect_from_string(str, orm = nil)
+        names_by_decreasing_length(orm).detect { |p| str.end_with?("_#{p}") }
       end
 
 #      def name_from_attribute_name(attribute_name)

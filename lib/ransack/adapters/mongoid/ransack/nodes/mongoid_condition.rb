@@ -1,6 +1,6 @@
 module Ransack
   module Nodes
-    class Condition
+    module MongoidCondition
 
       def arel_predicate
         predicates = attributes.map do |attr|

@@ -1,14 +1,14 @@
 require 'ransack/visitor'
 
 module Ransack
-  class Context
-    # attr_reader :arel_visitor
+  class ActiveRecordContext < Context
+    attr_reader :arel_visitor
 
     class << self
 
       def for_class(klass, options = {})
-        if klass.ancestors.include?(::Mongoid::Document)
-          Adapters::Mongoid::Context.new(klass, options)
+        if klass < ActiveRecord::Base
+          Adapters::ActiveRecord::Context.new(klass, options)
         end
       end
 
@@ -24,16 +24,24 @@ module Ransack
     def initialize(object, options = {})
       @object = relation_for(object)
       @klass = @object.klass
-      # @join_dependency = join_dependency(@object)
-      # @join_type = options[:join_type] || Arel::OuterJoin
+      @join_dependency = join_dependency(@object)
+      @join_type = options[:join_type] || Polyamorous::OuterJoin
       @search_key = options[:search_key] || Ransack.options[:search_key]
 
-      @base = @object.klass
-      # @engine = @base.arel_engine
 
-      # @default_table = Arel::Table.new(
-      #   @base.table_name, :as => @base.aliased_table_name, :engine => @engine
-      #   )
+      if ::ActiveRecord::VERSION::STRING >= Constants::RAILS_4_1
+        @base = @join_dependency.join_root
+        @engine = @base.base_klass.arel_engine
+      else
+        @base = @join_dependency.join_base
+        @engine = @base.arel_engine
+      end
+
+      @orm = :active_record
+
+      @default_table = Arel::Table.new(
+        @base.table_name, as: @base.aliased_table_name, type_caster: self
+        )
       @bind_pairs = Hash.new do |hash, key|
         parent, attr_name = get_parent_and_attribute_name(key.to_s)
         if parent && attr_name
@@ -55,6 +63,5 @@ module Ransack
         raise ArgumentError, "Don't know how to klassify #{obj.inspect}"
       end
     end
-
   end
 end

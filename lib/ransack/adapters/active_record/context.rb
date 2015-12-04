@@ -5,7 +5,7 @@ require 'polyamorous'
 module Ransack
   module Adapters
     module ActiveRecord
-      class Context < ::Ransack::Context
+      class Context < ::Ransack::ActiveRecordContext
 
         # Because the AR::Associations namespace is insane
         JoinDependency = ::ActiveRecord::Associations::JoinDependency

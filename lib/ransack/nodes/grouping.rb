@@ -192,7 +192,7 @@ module Ransack
 
       def strip_predicate_and_index(str)
         string = str.split(/\(/).first
-        Predicate.detect_and_strip_from_string!(string)
+        Predicate.detect_and_strip_from_string!(string, @context.orm)
         string
       end
     end

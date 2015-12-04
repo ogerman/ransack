@@ -1,6 +1,6 @@
 module Ransack
   module Nodes
-    class Condition
+    module ActiveRecordCondition
 
       def arel_predicate
         arel_predicate_for(attributes_array)

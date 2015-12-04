@@ -7,6 +7,19 @@ module Ransack
 
       attr_accessor :predicate
 
+
+      def initialize(context)
+        case context.orm
+        when :active_record
+          extend ActiveRecordCondition
+        when :mongoid
+          extend MongoidCondition
+        else
+          raise "unknown orm"
+        end
+        super(context)
+      end
+
       class << self
         def extract(context, key, values)
           attributes, predicate = extract_attributes_and_predicate(key, context)
@@ -33,8 +46,8 @@ module Ransack
 
         def extract_attributes_and_predicate(key, context = nil)
           str = key.dup
-          name = Predicate.detect_and_strip_from_string!(str)
-          predicate = Predicate.named(name)
+          name = Predicate.detect_and_strip_from_string!(str, context.orm)
+          predicate = Predicate.named(name, context.orm)
           unless predicate || Ransack.options[:ignore_unknown_conditions]
             raise ArgumentError, "No valid predicate for #{key}"
           end
@@ -167,7 +180,7 @@ module Ransack
       end
 
       def predicate_name=(name)
-        self.predicate = Predicate.named(name)
+        self.predicate = Predicate.named(name, @context.orm)
       end
       alias :p= :predicate_name=
 
